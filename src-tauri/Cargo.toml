@@ -39,5 +39,7 @@ security-framework = "3.6.0"
 tauri-plugin-biometric = "2.3.2"
 
 [target.'cfg(target_os = "android")'.dependencies]
+android-native-keyring-store = "1.0"
 jni = "0.21"
+keyring-core = "1.0"
 ndk-context = "0.1"

@@ -286,8 +286,10 @@ async function submit() {
         await biometricStore(selectedId.value, password.value)
         bioRevision.value++
         store.showToast(`${bioName} unlock enabled`)
-      } catch {
-        store.showToast(`Could not enable ${bioName}`)
+      } catch (err) {
+        store.showToast(
+          `Could not enable ${bioName}: ${err instanceof Error ? err.message : String(err)}`,
+        )
       }
     }
     password.value = ''
