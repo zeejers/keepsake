@@ -60,6 +60,8 @@ const bioEnabled = computed(() => {
 const dbxConnected = ref(false)
 const dbxEmail = ref('')
 const dbxAppKey = ref('')
+const dbxHasDefaultKey = ref(false)
+const dbxAdvanced = ref(false)
 const dbxAuthStarted = ref(false)
 const dbxCode = ref('')
 const dbxBusy = ref(false)
@@ -75,6 +77,7 @@ onMounted(async () => {
   dbxConnected.value = dropbox.isConnected()
   dbxEmail.value = dropbox.connectedEmail()
   dbxAppKey.value = dropbox.storedAppKey()
+  dbxHasDefaultKey.value = !!dbxAppKey.value
   bioAvailable.value = await biometricAvailable()
 })
 
@@ -309,30 +312,46 @@ defineExpose({ pickDatabase })
       <template v-if="mode === 'dropbox'">
         <template v-if="!dbxConnected">
           <div class="dbx-setup">
-            <p class="dbx-help">
-              Connect your Dropbox to open vaults from anywhere. You'll need a (free)
-              Dropbox app key —
-              <span class="dbx-link" @click="openUrl('https://www.dropbox.com/developers/apps')">
-                create one here</span
-              >
-              with “Scoped access”, then paste its App key below.
-            </p>
-            <input v-model="dbxAppKey" class="input" placeholder="Dropbox app key" spellcheck="false" />
-            <button class="btn" :disabled="!dbxAppKey.trim()" @click="startDropboxAuth">
-              <Cloud :size="14" />
-              1 · Authorize in browser
-            </button>
-            <template v-if="dbxAuthStarted">
+            <template v-if="!dbxAuthStarted">
+              <button class="dbx-connect" :disabled="!dbxAppKey.trim()" @click="startDropboxAuth">
+                <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true">
+                  <path d="M6 1.807 0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6.001 18.371l6.001 3.822 6-3.822-6-3.822-6.001 3.822z" />
+                </svg>
+                Connect Dropbox
+              </button>
+              <p class="dbx-note">
+                Your browser will open to approve access. Vaults stay encrypted; Dropbox only
+                ever stores the same bytes as your disk.
+              </p>
+              <template v-if="!dbxHasDefaultKey || dbxAdvanced">
+                <p class="dbx-help">
+                  Using your own Dropbox app? Paste its App key
+                  (<span class="dbx-link" @click="openUrl('https://www.dropbox.com/developers/apps')">create one</span>
+                  with Scoped access):
+                </p>
+                <input v-model="dbxAppKey" class="input" placeholder="Dropbox app key" spellcheck="false" />
+              </template>
+              <button v-else class="dbx-advanced" @click="dbxAdvanced = true">
+                Advanced: use a custom app key
+              </button>
+            </template>
+
+            <template v-else>
+              <p class="dbx-note">
+                Approve access in your browser, then paste the code Dropbox shows you:
+              </p>
               <input
                 v-model="dbxCode"
                 class="input"
-                placeholder="Paste the code Dropbox shows you"
+                placeholder="Paste code here"
                 spellcheck="false"
+                autofocus
               />
               <button class="btn primary" :disabled="!dbxCode.trim() || dbxBusy" @click="finishDropboxAuth">
                 <LoaderCircle v-if="dbxBusy" :size="14" class="spin" />
-                2 · Connect
+                {{ dbxBusy ? 'Connecting…' : 'Finish connecting' }}
               </button>
+              <button class="dbx-advanced" @click="startDropboxAuth">Reopen browser</button>
             </template>
           </div>
         </template>
@@ -734,6 +753,49 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.dbx-connect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius);
+  background: #0061ff;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.dbx-connect:hover:not(:disabled) {
+  background: #0057e5;
+}
+.dbx-connect:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.dbx-note {
+  margin: 0;
+  color: var(--faint);
+  font-size: 11.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+.dbx-advanced {
+  align-self: center;
+  background: none;
+  border: none;
+  color: var(--faint);
+  font-size: 11.5px;
+  cursor: pointer;
+  padding: 2px;
+}
+.dbx-advanced:hover {
+  color: var(--accent);
 }
 .dbx-help {
   margin: 0;
