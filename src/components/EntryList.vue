@@ -321,6 +321,13 @@ watch(
   width: 100%;
   padding: 9px;
 }
+@media (pointer: coarse) {
+  .footer-btn {
+    padding: 14px;
+    font-size: 15px;
+    border-radius: var(--radius);
+  }
+}
 .kbd-group {
   display: inline-flex;
   gap: 3px;

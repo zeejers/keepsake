@@ -228,6 +228,13 @@ kbd {
 }
 
 /* ---------- touch devices ---------- */
+/* keyboard-shortcut hints are noise on touch devices */
+@media (pointer: coarse) {
+  .kbd-group {
+    display: none;
+  }
+}
+
 @media (hover: none) {
   /* hover-reveal affordances must always be visible on touch */
   .field .copy,
