@@ -2,7 +2,6 @@
 import { nextTick, reactive, ref, watch } from 'vue'
 import {
   Copy,
-  Dices,
   Download,
   Layers,
   Eye,
@@ -20,8 +19,8 @@ import { open as openDialog, save as saveDialog } from '@tauri-apps/plugin-dialo
 import { readFile, writeFile } from '@tauri-apps/plugin-fs'
 import { ChevronLeft } from 'lucide-vue-next'
 import EntryAvatar from './EntryAvatar.vue'
+import PasswordGenerator from './PasswordGenerator.vue'
 import { useVaultStore } from '../stores/vault'
-import { generatePassword } from '../lib/fuzzy'
 import { modKey } from '../lib/platform'
 import type { CustomField } from '../lib/types'
 
@@ -78,8 +77,8 @@ function commit() {
   })
 }
 
-function roll() {
-  draft.password = generatePassword(20)
+function applyGenerated(password: string) {
+  draft.password = password
   revealedInEdit.value = true
 }
 
@@ -363,9 +362,7 @@ function fmtDate(d: Date | undefined) {
             <button type="button" class="icon-btn" :title="revealedInEdit ? 'Hide' : 'Reveal'" @click="revealedInEdit = !revealedInEdit">
               <component :is="revealedInEdit ? EyeOff : Eye" :size="15" />
             </button>
-            <button type="button" class="icon-btn" title="Generate password" @click="roll">
-              <Dices :size="15" />
-            </button>
+            <PasswordGenerator @use="applyGenerated" />
           </span>
         </label>
 
