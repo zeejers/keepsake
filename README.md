@@ -57,7 +57,7 @@ Grab the latest build for your platform from **[Releases](https://github.com/zee
 | Linux | `.deb` / `.AppImage` |
 | Android | `.apk` (sideload) |
 
-> macOS builds are not yet notarized; right-click → **Open** on first launch.
+> macOS builds are not yet notarized. On first launch macOS will block the app: click **Done**, then go to **System Settings → Privacy & Security**, scroll to Security, and click **Open Anyway**. (One-time; on macOS 15.0 and earlier, right-click → Open also works.)
 > Android: download `Keepsake-android.apk` on your phone and open it — allow installs from your browser when prompted. Releases are signed with the project's release key, so updates install over the top.
 
 ## Keyboard shortcuts
