@@ -433,6 +433,20 @@ export const useVaultStore = defineStore('vault', () => {
     }
   }
 
+  /** Close every open vault, best-effort saving dirty ones first (auto-lock). */
+  async function lockAll() {
+    for (const s of [...sessions.value]) {
+      if (s.dirty) {
+        try {
+          await save(s.id)
+        } catch {
+          // save() already toasted; locking still wins over staying open
+        }
+      }
+      closeSession(s.id)
+    }
+  }
+
   // ---- selection & editing ----
   function setSelection(session: VaultSession, ids: string[], primary: string | null, anchor?: string | null) {
     session.selectedEntryIds = new Set(ids)
@@ -824,6 +838,7 @@ export const useVaultStore = defineStore('vault', () => {
     createNew,
     setActive,
     closeSession,
+    lockAll,
     save,
     selectGroup,
     selectEntry,

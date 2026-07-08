@@ -12,7 +12,7 @@ import HelpOverlay from './components/HelpOverlay.vue'
 import PromptModal from './components/PromptModal.vue'
 import Toast from './components/Toast.vue'
 import { useVaultStore } from './stores/vault'
-import { isMac, modKey } from './lib/platform'
+import { isAndroid, isMac, modKey } from './lib/platform'
 
 const store = useVaultStore()
 const unlockScreen = ref<InstanceType<typeof UnlockScreen> | null>(null)
@@ -295,17 +295,27 @@ function onContextMenu(e: MouseEvent) {
   e.preventDefault()
 }
 
+// On Android, leaving the app locks every vault: whoever picks up the
+// phone next gets the unlock screen, not the password list.
+function onVisibilityChange() {
+  if (isAndroid && document.visibilityState === 'hidden' && !store.locked) {
+    void store.lockAll()
+  }
+}
+
 onMounted(() => {
   window.addEventListener('keydown', onKeydown)
   window.addEventListener('contextmenu', onContextMenu)
   window.addEventListener('resize', onResize)
   window.addEventListener('popstate', onPopstate)
+  document.addEventListener('visibilitychange', onVisibilityChange)
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown)
   window.removeEventListener('contextmenu', onContextMenu)
   window.removeEventListener('resize', onResize)
   window.removeEventListener('popstate', onPopstate)
+  document.removeEventListener('visibilitychange', onVisibilityChange)
 })
 </script>
 
