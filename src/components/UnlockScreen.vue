@@ -429,8 +429,10 @@ defineExpose({ pickDatabase })
               <span v-if="dbxConnected">Save on this computer…</span>
               <span v-else>Choose where to save it…</span>
             </button>
-            <button v-if="dbxConnected" class="file-drop" @click="dbxCreatePicking = true">
-              <Cloud :size="18" />
+            <button v-if="dbxConnected" class="file-drop dbx-drop" @click="dbxCreatePicking = true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path d="M6 1.807 0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6.001 18.371l6.001 3.822 6-3.822-6-3.822-6.001 3.822z" />
+              </svg>
               <span>Save in Dropbox</span>
             </button>
           </div>
@@ -438,7 +440,9 @@ defineExpose({ pickDatabase })
           <!-- create: name the Dropbox vault -->
           <div v-else class="dbx-create">
             <div class="dbx-create-head">
-              <Cloud :size="14" class="dbx-cloud" />
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="dbx-glyph" aria-hidden="true">
+                <path d="M6 1.807 0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6.001 18.371l6.001 3.822 6-3.822-6-3.822-6.001 3.822z" />
+              </svg>
               <span>New vault in Dropbox{{ dbxEmail ? ' · ' + dbxEmail : '' }}</span>
             </div>
             <input
@@ -677,6 +681,12 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex-shrink: 0;
+}
+
+.dbx-drop svg,
+.dbx-glyph {
+  color: #0061ff;
   flex-shrink: 0;
 }
 
