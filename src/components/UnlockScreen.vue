@@ -69,6 +69,15 @@ const dbxFiles = ref<DropboxFile[]>([])
 const dbxLoading = ref(false)
 const dbxError = ref('')
 
+// ---- create-in-Dropbox ----
+const dbxCreatePicking = ref(false)
+const dbxCreateName = ref('')
+const dbxCreatePath = computed(() => {
+  const raw = dbxCreateName.value.trim().replace(/^\/+/, '')
+  if (!raw) return ''
+  return '/' + (raw.toLowerCase().endsWith('.kdbx') ? raw : raw + '.kdbx')
+})
+
 onMounted(async () => {
   recents.value = store.recentFiles()
   if (!props.modal && recents.value.length) {
@@ -108,6 +117,8 @@ function switchMode(next: 'open' | 'dropbox' | 'create') {
   confirmPassword.value = ''
   keyFilePath.value = null
   error.value = ''
+  dbxCreatePicking.value = false
+  dbxCreateName.value = ''
 }
 
 async function pickDatabase() {
@@ -139,12 +150,28 @@ async function pickDatabase() {
 }
 
 function changeSelection() {
-  if (selected.value?.kind === 'dropbox') {
+  if (mode.value === 'create') {
+    if (!dbxConnected.value) {
+      void pickDatabase()
+      return
+    }
+    // back to the destination choice
+    selected.value = null
+    dbxCreatePicking.value = false
+  } else if (selected.value?.kind === 'dropbox') {
     selected.value = null
     mode.value = 'dropbox'
   } else {
     void pickDatabase()
   }
+}
+
+function confirmDropboxTarget() {
+  if (!dbxCreatePath.value) return
+  selected.value = { kind: 'dropbox', path: dbxCreatePath.value }
+  dbxCreatePicking.value = false
+  error.value = ''
+  passwordInput.value?.focus()
 }
 
 async function pickKeyFile() {
@@ -249,7 +276,7 @@ async function submit() {
   error.value = ''
   try {
     if (mode.value === 'create') {
-      await store.createNew(selected.value.path, password.value)
+      await store.createNew(selected.value, password.value)
     } else {
       await store.unlock(selected.value, password.value, keyFilePath.value)
     }
@@ -389,11 +416,51 @@ defineExpose({ pickDatabase })
 
       <!-- ============ Open / Create ============ -->
       <template v-else>
-        <button v-if="!selected" class="file-drop" @click="pickDatabase">
-          <component :is="mode === 'create' ? Sparkles : FolderOpen" :size="18" />
-          <span v-if="mode === 'open'">Choose a <b>.kdbx</b> file…</span>
-          <span v-else>Choose where to save it…</span>
-        </button>
+        <template v-if="!selected">
+          <button v-if="mode === 'open'" class="file-drop" @click="pickDatabase">
+            <FolderOpen :size="18" />
+            <span>Choose a <b>.kdbx</b> file…</span>
+          </button>
+
+          <!-- create: pick a destination -->
+          <div v-else-if="!dbxCreatePicking" class="create-choices">
+            <button class="file-drop" @click="pickDatabase">
+              <Sparkles :size="18" />
+              <span v-if="dbxConnected">Save on this computer…</span>
+              <span v-else>Choose where to save it…</span>
+            </button>
+            <button v-if="dbxConnected" class="file-drop" @click="dbxCreatePicking = true">
+              <Cloud :size="18" />
+              <span>Save in Dropbox</span>
+            </button>
+          </div>
+
+          <!-- create: name the Dropbox vault -->
+          <div v-else class="dbx-create">
+            <div class="dbx-create-head">
+              <Cloud :size="14" class="dbx-cloud" />
+              <span>New vault in Dropbox{{ dbxEmail ? ' · ' + dbxEmail : '' }}</span>
+            </div>
+            <input
+              v-model="dbxCreateName"
+              class="input"
+              placeholder="Vault name (e.g. Passwords)"
+              spellcheck="false"
+              autofocus
+              @keydown.enter.prevent="confirmDropboxTarget"
+            />
+            <p class="dbx-note dbx-create-note">
+              <template v-if="dbxCreatePath">Will be saved as <b>{{ dbxCreatePath }}</b></template>
+              <template v-else>Use / to place it in a folder, e.g. Vaults/Personal</template>
+            </p>
+            <div class="dbx-create-actions">
+              <button class="btn ghost" @click="dbxCreatePicking = false">Back</button>
+              <button class="btn primary" :disabled="!dbxCreatePath" @click="confirmDropboxTarget">
+                Continue
+              </button>
+            </div>
+          </div>
+        </template>
 
         <div v-else class="file-chip">
           <component :is="isCloud ? Cloud : FileKey2" :size="16" class="file-icon" />
@@ -603,6 +670,43 @@ h1 {
   border-color: var(--accent-border);
   background: var(--accent-soft);
   color: var(--text);
+}
+
+.create-choices {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.dbx-create {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.dbx-create-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+.dbx-create-note {
+  text-align: left;
+  min-height: 17px;
+}
+.dbx-create-note b {
+  color: var(--text-soft);
+  word-break: break-all;
+}
+.dbx-create-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .file-chip {

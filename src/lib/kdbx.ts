@@ -142,19 +142,25 @@ export async function openVault(
   return id
 }
 
-/** Create a brand-new kdbx4/Argon2id database and write it to disk. */
-export async function createVaultFile(filePath: string, password: string): Promise<string> {
+/** Create a brand-new kdbx4/Argon2id database and write it to disk or Dropbox. */
+export async function createVault(source: VaultSource, password: string): Promise<string> {
   initCrypto()
-  const name = (filePath.split(/[/\\]/).pop() ?? 'Passwords').replace(/\.kdbx$/i, '')
+  const name = sourceLabel(source).replace(/\.kdbx$/i, '') || 'Passwords'
   const credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(password))
   const db = kdbxweb.Kdbx.create(credentials, name)
   db.setVersion(4)
   db.setKdf(kdbxweb.Consts.KdfId.Argon2id)
   db.meta.recycleBinEnabled = true
   const buffer = await db.save()
-  await writeFile(filePath, new Uint8Array(buffer))
+  const bytes = new Uint8Array(buffer)
+  let rev: string | undefined
+  if (source.kind === 'dropbox') {
+    rev = await dropbox.upload(source.path, bytes, undefined)
+  } else {
+    await writeFile(source.path, bytes)
+  }
   const id = String(nextId++)
-  vaults.set(id, { db, source: { kind: 'file', path: filePath } })
+  vaults.set(id, { db, source, rev })
   return id
 }
 

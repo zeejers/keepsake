@@ -4,7 +4,7 @@ import * as kdbxweb from 'kdbxweb'
 import { writeText, readText } from '@tauri-apps/plugin-clipboard-manager'
 import {
   openVault,
-  createVaultFile,
+  createVault,
   closeVault,
   saveVault,
   getDb,
@@ -106,10 +106,6 @@ function groupPathOf(group: kdbxweb.KdbxGroup | undefined): string {
     g = g.parentGroup
   }
   return parts.join(' / ')
-}
-
-function baseName(path: string): string {
-  return path.split(/[/\\]/).pop() ?? path
 }
 
 export const useVaultStore = defineStore('vault', () => {
@@ -372,15 +368,15 @@ export const useVaultStore = defineStore('vault', () => {
     initSession(id, source)
   }
 
-  async function createNew(path: string, password: string) {
+  async function createNew(source: VaultSource, password: string) {
     let id: string
     try {
-      id = await createVaultFile(path, password)
+      id = await createVault(source, password)
     } catch (err) {
       throw new Error(err instanceof Error ? err.message : 'Could not create the database.')
     }
-    initSession(id, { kind: 'file', path })
-    showToast(`Created ${baseName(path)}`)
+    initSession(id, source)
+    showToast(`Created ${sourceLabel(source)}`)
   }
 
   function setActive(id: string) {

@@ -243,7 +243,11 @@ export async function upload(
   }
   const mode = rev ? { '.tag': 'update', update: rev } : { '.tag': 'add' }
   let res = await doUpload(mode, false)
-  if (res.status === 409 && rev) {
+  if (res.status === 409) {
+    if (!rev) {
+      // add mode: the path is already taken
+      throw new Error('A file with that name already exists in Dropbox.')
+    }
     // remote changed: don't clobber it — save ours as a conflict copy
     res = await doUpload({ '.tag': 'add' }, true)
     if (!res.ok) throw new Error(`Dropbox upload failed (${res.status})`)
