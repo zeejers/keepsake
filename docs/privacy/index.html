@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Keepsake</title>
+  <meta name="description" content="Keepsake privacy policy: no accounts, no telemetry, no servers. Your vault never leaves your control." />
+  <link rel="icon" href="../icon.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --bg: #0e1116;
+      --panel-2: #171c25;
+      --border: #232b38;
+      --border-soft: #1c222d;
+      --text: #e8ebf1;
+      --text-soft: #b6bdc9;
+      --muted: #7d8695;
+      --accent: #35d3a5;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { background: var(--bg); }
+    body {
+      font: 16px/1.7 var(--sans);
+      color: var(--text-soft);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 64px; }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; text-decoration: none; }
+    .brand img { width: 36px; height: 36px; border-radius: 9px; }
+    .brand span { color: var(--text); font-weight: 700; font-size: 17px; }
+    h1 { color: var(--text); font-size: 30px; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .updated { color: var(--muted); font-size: 13px; margin-bottom: 36px; }
+    h2 { color: var(--text); font-size: 18px; letter-spacing: -0.2px; margin: 32px 0 10px; }
+    p { margin-bottom: 12px; }
+    ul { margin: 0 0 12px 22px; }
+    li { margin-bottom: 6px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .tldr {
+      padding: 18px 20px; border-radius: 12px; margin-bottom: 8px;
+      background: var(--panel-2); border: 1px solid var(--border-soft);
+      color: var(--text-soft);
+    }
+    .tldr b { color: var(--accent); }
+    footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border-soft); color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="/">
+      <img src="../icon.svg" alt="Keepsake icon" />
+      <span>Keepsake</span>
+    </a>
+
+    <h1>Privacy Policy</h1>
+    <p class="updated">Effective July 7, 2026</p>
+
+    <p class="tldr">
+      <b>The short version:</b> Keepsake has no accounts, no servers, no analytics, and no
+      telemetry. Your passwords are encrypted on your device with a key derived from your
+      master password, and they are stored only where you put them — a local file or your
+      own Dropbox. We never see, receive, or transmit any of your data.
+    </p>
+
+    <h2>What Keepsake stores, and where</h2>
+    <ul>
+      <li><b>Your vault</b> is a standard KeePass <code>.kdbx</code> file, encrypted with
+        your master password (Argon2/AES). It lives wherever you choose: a file on your
+        device, or a file in your own Dropbox account. Keepsake writes a <code>.bak</code>
+        backup next to local vault files when saving.</li>
+      <li><b>Your master password</b> is never written to disk by default. If you enable
+        biometric unlock, it is stored in your operating system's keychain on that device,
+        protected by the OS, and released only after a biometric or device-password check.
+        Keepsake never has access to your biometric data itself — that stays inside the
+        operating system.</li>
+      <li><b>App preferences</b> (recently opened vaults, Dropbox connection tokens) are
+        stored locally on your device in the app's private storage.</li>
+    </ul>
+
+    <h2>Dropbox</h2>
+    <p>
+      If you connect Dropbox, Keepsake talks <em>directly</em> from your device to
+      Dropbox's API over HTTPS to list, download, and upload your <code>.kdbx</code> files.
+      No intermediary server is involved. The OAuth tokens that authorize this access are
+      stored only on your device, and you can revoke them at any time from your
+      <a href="https://www.dropbox.com/account/connected_apps">Dropbox connected-apps page</a>
+      or by disconnecting inside Keepsake. Your use of Dropbox is governed by
+      <a href="https://www.dropbox.com/privacy">Dropbox's privacy policy</a>.
+      Files stored in Dropbox remain encrypted with your master password — Dropbox
+      only ever holds the same encrypted bytes as your local disk would.
+    </p>
+
+    <h2>What Keepsake collects about you</h2>
+    <p>
+      Nothing. Keepsake contains no analytics, no crash reporting, no advertising
+      identifiers, and no network calls other than the Dropbox API requests you initiate.
+      We do not know who uses Keepsake, and we cannot access anyone's data.
+    </p>
+
+    <h2>Clipboard</h2>
+    <p>
+      When you copy a password or other secret, Keepsake automatically clears it from the
+      clipboard 30 seconds later (if the clipboard still contains that value). Be aware
+      that other apps on your device can read the clipboard while a value is on it — this
+      is a property of every operating system, not something any password manager can
+      prevent.
+    </p>
+
+    <h2>Children</h2>
+    <p>
+      Keepsake does not collect personal information from anyone, including children.
+    </p>
+
+    <h2>Changes</h2>
+    <p>
+      If this policy ever changes, the new version will be published at this address with
+      an updated effective date, and the change history is public in the
+      <a href="https://github.com/GITHUB_USER/keepsake">project repository</a>.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions? Open an issue on
+      <a href="https://github.com/GITHUB_USER/keepsake/issues">GitHub</a>.
+    </p>
+
+    <footer>
+      Keepsake is open source under the MIT license. It is an independent project and is
+      not affiliated with KeePass or Dropbox.
+    </footer>
+  </div>
+</body>
+</html>

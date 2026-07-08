@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keepsake — a fast, keyboard-first KeePass app</title>
+  <meta name="description" content="Keepsake is a modern, keyboard-first password manager for KeePass .kdbx files. macOS, Windows, Linux, and Android. Open source, Dropbox sync, Touch ID." />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --bg: #0e1116;
+      --panel: #12161d;
+      --panel-2: #171c25;
+      --border: #232b38;
+      --border-soft: #1c222d;
+      --text: #e8ebf1;
+      --text-soft: #b6bdc9;
+      --muted: #7d8695;
+      --accent: #35d3a5;
+      --accent-strong: #2bbf94;
+      --accent-soft: rgba(53, 211, 165, 0.13);
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { background: var(--bg); }
+    body {
+      font: 16px/1.6 var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(1100px 520px at 50% -8%, rgba(53, 211, 165, 0.08), transparent 60%),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+    header { text-align: center; padding: 84px 0 40px; }
+    .icon { width: 96px; height: 96px; border-radius: 24px; box-shadow: 0 16px 48px rgba(53, 211, 165, 0.18); }
+    h1 { font-size: 44px; letter-spacing: -1px; margin: 26px 0 10px; font-weight: 800; }
+    .tagline { color: var(--text-soft); font-size: 19px; max-width: 560px; margin: 0 auto; }
+    .tagline b { color: var(--accent); font-weight: 600; }
+
+    .downloads { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 36px 0 10px; }
+    .dl {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 12px 20px; border-radius: 12px;
+      border: 1px solid var(--border); background: var(--panel-2);
+      color: var(--text); text-decoration: none; font-weight: 600; font-size: 14.5px;
+      transition: border-color .15s, background .15s, transform .1s;
+    }
+    .dl:hover { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+    .dl.primary { background: var(--accent); border-color: var(--accent); color: #06231a; }
+    .dl.primary:hover { background: var(--accent-strong); }
+    .dl small { color: inherit; opacity: .65; font-weight: 500; }
+    .sub { text-align: center; color: var(--muted); font-size: 13px; }
+    .sub a { color: var(--accent); text-decoration: none; }
+    .sub a:hover { text-decoration: underline; }
+
+    .features {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px; margin: 56px 0;
+    }
+    .feature {
+      padding: 22px 22px 20px; border-radius: 14px;
+      background: var(--panel-2); border: 1px solid var(--border-soft);
+    }
+    .feature h3 { font-size: 15px; margin-bottom: 6px; letter-spacing: -0.2px; }
+    .feature p { color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+    .feature .k {
+      display: inline-block; padding: 1px 7px; border-radius: 5px;
+      background: var(--panel); border: 1px solid var(--border);
+      font-family: var(--sans); font-size: 11.5px; font-weight: 600; color: var(--text-soft);
+    }
+
+    .kbd-strip {
+      display: flex; flex-wrap: wrap; gap: 18px; justify-content: center;
+      padding: 22px; border-radius: 14px; margin-bottom: 56px;
+      background: var(--panel); border: 1px solid var(--border-soft);
+      color: var(--muted); font-size: 13px;
+    }
+    .kbd-strip span { display: inline-flex; align-items: center; gap: 7px; }
+    kbd {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; height: 20px; padding: 0 6px;
+      border-radius: 5px; border: 1px solid var(--border); border-bottom-width: 2px;
+      background: var(--panel-2); color: var(--text-soft);
+      font-family: var(--sans); font-size: 11px; font-weight: 600;
+    }
+
+    footer {
+      text-align: center; padding: 28px 0 48px;
+      border-top: 1px solid var(--border-soft);
+      color: var(--muted); font-size: 13px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 560px) {
+      header { padding-top: 56px; }
+      h1 { font-size: 34px; }
+      .tagline { font-size: 16.5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img class="icon" src="icon.svg" alt="Keepsake icon" width="96" height="96" />
+      <h1>Keepsake</h1>
+      <p class="tagline">
+        A fast, keyboard-first password manager for KeePass <b>.kdbx</b> files.
+        Beautiful on the desktop, at home on your phone.
+      </p>
+
+      <div class="downloads">
+        <a class="dl primary" href="https://github.com/GITHUB_USER/keepsake/releases/latest">
+          Download for macOS
+        </a>
+        <a class="dl" href="https://github.com/GITHUB_USER/keepsake/releases/latest">Windows</a>
+        <a class="dl" href="https://github.com/GITHUB_USER/keepsake/releases/latest">Linux</a>
+        <a class="dl" href="https://github.com/GITHUB_USER/keepsake/releases/latest">Android <small>APK</small></a>
+      </div>
+      <p class="sub">
+        Free &amp; open source ·
+        <a href="https://github.com/GITHUB_USER/keepsake">View on GitHub</a>
+      </p>
+    </header>
+
+    <section class="features">
+      <div class="feature">
+        <h3>Your vault, unchanged</h3>
+        <p>Works directly on standard <span class="k">kdbx 3 &amp; 4</span> files with Argon2 — fully compatible with KeePassXC, KeePassium, and the rest of the ecosystem. No import, no lock-in.</p>
+      </div>
+      <div class="feature">
+        <h3>Keyboard-first</h3>
+        <p>Fuzzy search everything, create entries in place, copy credentials, and jump between vaults without touching the mouse. Press <span class="k">?</span> for the full cheat sheet.</p>
+      </div>
+      <div class="feature">
+        <h3>Dropbox sync</h3>
+        <p>Connect once and open vaults straight from Dropbox on every device. Saves upload automatically, with conflict copies protecting simultaneous edits.</p>
+      </div>
+      <div class="feature">
+        <h3>Touch ID</h3>
+        <p>Unlock with your fingerprint on macOS. The master password lives in your system keychain, gated by biometrics with a device-password fallback.</p>
+      </div>
+      <div class="feature">
+        <h3>Careful with secrets</h3>
+        <p>The clipboard clears itself 30 seconds after copying, notes stay blurred until revealed, and a backup is written beside your vault on every save.</p>
+      </div>
+      <div class="feature">
+        <h3>Everything in the format</h3>
+        <p>Groups, entries, custom fields, file attachments, edit history, and trash — the full KeePass model, in a clean three-pane layout.</p>
+      </div>
+    </section>
+
+    <div class="kbd-strip">
+      <span><kbd>⌘</kbd><kbd>K</kbd> search</span>
+      <span><kbd>⌘</kbd><kbd>N</kbd> new entry</span>
+      <span><kbd>⌘</kbd><kbd>C</kbd> copy password</span>
+      <span><kbd>⌘</kbd><kbd>B</kbd> copy username</span>
+      <span><kbd>⌘</kbd><kbd>1-9</kbd> switch vault</span>
+      <span><kbd>⌘</kbd><kbd>L</kbd> lock</span>
+    </div>
+
+    <footer>
+      MIT licensed · Built with Tauri &amp; Vue ·
+      <a href="https://github.com/GITHUB_USER/keepsake">Source</a> ·
+      <a href="https://github.com/GITHUB_USER/keepsake/issues">Issues</a> ·
+      <a href="/privacy/">Privacy</a>
+      <br /><br />
+      Keepsake is an independent project and is not affiliated with KeePass.
+    </footer>
+  </div>
+</body>
+</html>
