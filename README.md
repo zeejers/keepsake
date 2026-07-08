@@ -1,42 +1,65 @@
-# Keepsake
+<div align="center">
+  <img src="docs/icon-256.png" alt="Keepsake" width="128" height="128" />
 
-A fast, keyboard-first password manager for KeePass `.kdbx` files. Cross-platform desktop app built with Tauri v2 + Vue 3.
+  # Keepsake
 
-- **Three-pane layout** (Buttercup-style): groups on the left, entries in the middle, details on the right
-- **Multiple vaults** open at once in tabs (`⌘1…⌘9` to switch, `⌘O` to add)
-- **Create new databases** (kdbx4 / Argon2id) or open existing ones — kdbx 3 & 4 via [kdbxweb](https://github.com/keeweb/kdbxweb)
-- **Keyboard-first**: `⌘K` fuzzy search across titles, usernames, URLs, and notes; `⌘N` new entry in the current group; `⌘C`/`⌘B` copy password/username; `?` for the full cheat sheet
-- **Click-to-copy** any field; notes stay blurred until revealed, and selecting a range of notes copies just that part
-- **File attachments**: view, add, save, and remove entry binaries (kdbx4 binary pool, deduplicated)
-- **Multi-select** with `⌘`-click / `⇧`-click / `⌘A`, plus a right-click context menu (edit, copy, open URL, delete)
-- **Auto-save**: every change is written to disk moments after you make it — no explicit save step
-- **Dropbox vaults**: connect once, browse your `.kdbx` files, open and auto-save over the Dropbox API — works the same on desktop and Android. Conflict-safe: if the remote file changed underneath you, your version is saved as a Dropbox conflict copy instead of clobbering it
-- Clipboard auto-clears 30s after copying a secret
-- A `.bak` of the database is written next to local files on every save (Google Drive sync is planned)
+  **A fast, keyboard-first password manager for KeePass `.kdbx` files.**
+  <br/>
+  Beautiful on the desktop. At home on your phone. Your storage, your secrets.
 
-## Development
+  <br/>
 
-```bash
-make install   # npm install
-make dev       # run the app (tauri dev)
-make check     # typecheck TS + cargo check
-make build     # production bundles (dmg/app/msi/deb)
-```
+  [![Release](https://img.shields.io/github/v/release/zeejers/keepsake?include_prereleases&color=35d3a5&labelColor=171c25)](https://github.com/zeejers/keepsake/releases/latest)
+  [![License: MIT](https://img.shields.io/badge/license-MIT-35d3a5?labelColor=171c25)](LICENSE)
+  [![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%20v2-35d3a5?labelColor=171c25)](https://tauri.app)
+  [![Platforms](https://img.shields.io/badge/platforms-macOS%20·%20Windows%20·%20Linux%20·%20Android-35d3a5?labelColor=171c25)](https://github.com/zeejers/keepsake/releases/latest)
 
-Requires Node 20+ and a Rust toolchain (for Tauri).
+  <br/>
 
-### Try it
+  **[Download](https://github.com/zeejers/keepsake/releases/latest)** · **[kdbx.app](https://kdbx.app)** · **[Privacy](https://kdbx.app/privacy/)**
 
-Generate a demo vault, then unlock it with password `demo`:
+  <br/>
 
-```bash
-node scripts/make-demo.mjs   # writes demo.kdbx
-make dev
-```
+  <img src="docs/screenshot.png" alt="Keepsake: groups, entries, and entry editing in a three-pane layout" width="840" />
+</div>
 
-`node scripts/smoke-kdbx.mjs` runs a headless round-trip test of the crypto layer (create → save → reload, wrong-password rejection).
+---
 
-## Shortcuts
+## Why Keepsake?
+
+I built Keepsake because I wasn't happy with the ease of use or the quality of the KeePass-based password managers out there. I wanted something that worked well cross-platform and could connect to cloud storage like Dropbox: a centralized, **bring-your-own-storage** `.kdbx` file that *isn't* sitting in the database of a big enterprise password manager company. The track record there speaks for itself: [LastPass had customers' encrypted vaults stolen outright in 2022](https://en.wikipedia.org/wiki/LastPass#Security_incidents), and it was neither the first incident nor the last across the industry.
+
+The KeePass model gets the architecture right: **one encrypted file, an open format, and no company in the loop.** Your vault is encrypted on your device with a key derived from your master password, and the only thing that ever touches disk or cloud storage is ciphertext. There's no account to breach, no server-side database to dump, and no vendor between you and your passwords. If Keepsake disappeared tomorrow, your vault still opens in KeePassXC, KeePassium, or any of a dozen other clients. That is the point of an open format.
+
+Keepsake's job is to make that model *pleasant*: a clean three-pane layout, first-class keyboard shortcuts, biometric unlock, and Dropbox sync that just works, on your desktop and your phone.
+
+## Features
+
+|  |  |
+| --- | --- |
+| **Your vault, unchanged** | Works directly on standard kdbx 3 & 4 files with Argon2. Fully compatible with KeePassXC, KeePassium, and the rest of the ecosystem. No import, no lock-in. |
+| **Keyboard-first** | `⌘K` fuzzy search across titles, usernames, URLs, and notes; `⌘N` new entry in the current group; `⌘C`/`⌘B` copy password/username; `?` shows the full cheat sheet. |
+| **Dropbox sync (BYOS)** | Connect once, open vaults straight from Dropbox on every device. Saves upload automatically, and revision-guarded writes mean simultaneous edits become conflict copies, never silent overwrites. |
+| **Biometric unlock** | Touch ID on macOS: the master password lives in your system keychain, gated by biometrics with a device-password fallback. |
+| **Multiple vaults** | Open several databases at once in tabs (`⌘1…⌘9` to switch), each with its own state. |
+| **The full KeePass model** | Groups, entries, custom fields, file attachments, edit history, and trash, all in a clean three-pane layout with multi-select and context menus. |
+| **Careful with secrets** | Clipboard auto-clears 30 seconds after copying, notes stay blurred until revealed, and a `.bak` is written beside local vaults on every save. |
+| **Cross-platform** | One codebase: macOS, Windows, Linux, and Android (responsive single-pane layout on phones). |
+
+## Downloads
+
+Grab the latest build for your platform from **[Releases](https://github.com/zeejers/keepsake/releases/latest)**:
+
+| Platform | Package |
+| --- | --- |
+| macOS (Apple Silicon / Intel) | `.dmg` |
+| Windows | `.msi` / `.exe` |
+| Linux | `.deb` / `.AppImage` |
+| Android | `.apk` (sideload) |
+
+> macOS builds are not yet notarized; right-click → **Open** on first launch.
+
+## Keyboard shortcuts
 
 | Keys | Action |
 | --- | --- |
@@ -51,49 +74,71 @@ make dev
 | `⌘1…⌘9` | Switch vault tab |
 | `⌘O` | Open another vault |
 | `⌘⌫` | Move selection to trash |
-| `⌘S` | Save database to disk (manual — auto-save is on) |
+| `⌘S` | Save database to disk (manual; auto-save is on) |
 | `⌘L` | Close current vault |
 | `?` | Shortcut cheat sheet |
 
 On Windows/Linux, use `Ctrl` instead of `⌘`.
 
-## Releasing
+## Dropbox setup
 
-`.github/workflows/release.yml` builds macOS (arm64 + x86_64), Windows, and Linux bundles via `tauri-action` and attaches them to a draft GitHub release whenever a `v*` tag is pushed. macOS signing/notarization activates when the `APPLE_*` secrets are configured (see the commented env block in the workflow).
+Keepsake talks to Dropbox as an OAuth PKCE public client: no server, no app secret, tokens stay on your device. Builds ship with a default app key, so connecting is: **Dropbox tab → Authorize in browser → paste the code**. Done.
+
+To use your own Dropbox app instead: create one at [dropbox.com/developers/apps](https://www.dropbox.com/developers/apps) ("Scoped access"), enable `files.metadata.read`, `files.content.read`, and `files.content.write` on the Permissions tab, and paste your App key in Keepsake's Dropbox tab (or set `DEFAULT_APP_KEY` in `src/lib/dropbox.ts`).
+
+## Development
+
+```bash
+make install       # npm install
+make dev           # run the app (tauri dev)
+make check         # typecheck TS + cargo check
+make build         # production bundles (dmg/app/msi/deb)
+make install-app   # build + install to /Applications (macOS)
+make android-apk   # debug APK for sideloading (arm64)
+```
+
+Requires Node 20+ and a Rust toolchain; Android builds additionally need the Android SDK + NDK.
+
+### Try it with a demo vault
+
+```bash
+node scripts/make-demo.mjs   # writes demo.kdbx (password: demo)
+make dev
+```
+
+`node scripts/smoke-kdbx.mjs` runs a headless round-trip test of the crypto layer (create → save → reload, attachments, wrong-password rejection).
+
+### Releasing
+
+Pushing a `v*` tag runs `.github/workflows/release.yml`, which builds macOS (arm64 + x86_64), Windows, and Linux bundles via `tauri-action` and attaches them to a draft GitHub release. macOS signing/notarization activates when the `APPLE_*` secrets are configured.
 
 ## Architecture
 
 ```
 src/
-  lib/kdbx.ts        kdbxweb + argon2 (hash-wasm) glue, multi-vault handles,
-                     file I/O via tauri-plugin-fs
+  lib/kdbx.ts        kdbxweb + argon2 glue; VaultSource abstraction (file | dropbox)
+  lib/argon2.worker.ts   key derivation in a Web Worker so the UI never freezes
+  lib/dropbox.ts     OAuth PKCE + Dropbox API (search / download / rev-guarded upload)
   stores/vault.ts    Pinia store; vault sessions (tabs) with per-vault UI state.
-                     kdbxweb objects live outside Vue reactivity — the store
-                     derives plain view-models keyed on a revision counter
-  components/        UnlockScreen (open/create), Sidebar/GroupTreeNode, EntryList,
+                     kdbxweb objects live outside Vue reactivity; the store derives
+                     plain view-models keyed on a revision counter
+  components/        UnlockScreen (open/Dropbox/create), Sidebar, EntryList,
                      EntryDetail, SearchPalette, HelpOverlay, PromptModal, Toast
-src-tauri/           Tauri v2 shell (dialog, fs, clipboard-manager, opener plugins)
+src-tauri/           Tauri v2 shell (dialog, fs, clipboard, opener plugins +
+                     Touch ID via LocalAuthentication/Keychain on macOS)
+docs/                kdbx.app landing page + privacy policy (GitHub Pages)
 ```
 
-The Rust side is a plain Tauri shell — all kdbx parsing happens in the webview via kdbxweb, so the same code path can later back a browser or mobile build.
-
-## Dropbox setup
-
-Keepsake talks to Dropbox as an OAuth PKCE public client, so you need a (free) app key:
-
-1. Create an app at [dropbox.com/developers/apps](https://www.dropbox.com/developers/apps) — "Scoped access", "Full Dropbox" (or "App folder" to sandbox it), any name.
-2. On the app's Permissions tab enable `files.metadata.read`, `files.content.read`, and `files.content.write`.
-3. In Keepsake's Dropbox tab, paste the App key, authorize in the browser, and paste back the code Dropbox shows you.
-
-The refresh token is stored locally; no server is involved. To ship builds with your key baked in, set `DEFAULT_APP_KEY` in `src/lib/dropbox.ts`.
+The Rust side is a thin shell; all kdbx parsing happens in the webview via [kdbxweb](https://github.com/keeweb/kdbxweb), so the same code path backs desktop and mobile alike.
 
 ## Security notes
 
 - Crypto is delegated to [kdbxweb](https://github.com/keeweb/kdbxweb) (the library behind KeeWeb) with Argon2 via [hash-wasm](https://github.com/Daninet/hash-wasm); key derivation runs in a Web Worker.
 - Touch ID stores the master password in the macOS login Keychain (scoped to this app) behind a LocalAuthentication prompt.
+- Dropbox only ever receives the same encrypted bytes your disk would; encryption happens on-device, before upload.
 - Clipboard contents are cleared 30 seconds after copying a secret.
 - This project has **not** been independently security-audited. Use at your own risk.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Keepsake is an independent project and is not affiliated with KeePass or Dropbox.

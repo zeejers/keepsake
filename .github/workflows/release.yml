@@ -7,7 +7,69 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Create the draft release once so the parallel build jobs don't race
+  # (racing produces duplicate drafts with assets split between them).
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      release_id: ${{ steps.create.outputs.result }}
+    steps:
+      - uses: actions/github-script@v7
+        id: create
+        with:
+          script: |
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: process.env.GITHUB_REF_NAME,
+              name: `Keepsake ${process.env.GITHUB_REF_NAME}`,
+              body: 'See the assets below to download and install.',
+              draft: true,
+            })
+            return data.id
+
+  # Duplicate each versioned asset under a stable name so
+  # /releases/latest/download/<stable-name> links never go stale.
+  stable-asset-names:
+    needs: [create-release, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const releaseId = Number('${{ needs.create-release.outputs.release_id }}')
+            const { owner, repo } = context.repo
+            const stable = [
+              [/aarch64\.dmg$/, 'Keepsake-macos-arm64.dmg'],
+              [/x64\.dmg$/, 'Keepsake-macos-intel.dmg'],
+              [/-setup\.exe$/, 'Keepsake-windows-setup.exe'],
+              [/\.msi$/, 'Keepsake-windows.msi'],
+              [/\.AppImage$/, 'Keepsake-linux.AppImage'],
+              [/\.deb$/, 'Keepsake-linux.deb'],
+              [/\.rpm$/, 'Keepsake-linux.rpm'],
+            ]
+            const { data: assets } = await github.rest.repos.listReleaseAssets({ owner, repo, release_id: releaseId, per_page: 100 })
+            for (const [re, name] of stable) {
+              if (assets.some(a => a.name === name)) continue
+              const src = assets.find(a => re.test(a.name) && !a.name.startsWith('Keepsake-macos') && !a.name.startsWith('Keepsake-windows') && !a.name.startsWith('Keepsake-linux'))
+              if (!src) continue
+              const download = await github.request('GET /repos/{owner}/{repo}/releases/assets/{asset_id}', {
+                owner, repo, asset_id: src.id, headers: { accept: 'application/octet-stream' },
+              })
+              await github.rest.repos.uploadReleaseAsset({
+                owner, repo, release_id: releaseId, name,
+                data: Buffer.from(download.data),
+                headers: { 'content-type': 'application/octet-stream', 'content-length': src.size },
+              })
+              console.log(`uploaded ${name} (from ${src.name})`)
+            }
+
   build:
+    needs: create-release
     permissions:
       contents: write
     strategy:
@@ -59,8 +121,5 @@ jobs:
           # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'Keepsake ${{ github.ref_name }}'
-          releaseBody: 'See the assets below to download and install.'
-          releaseDraft: true
+          releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.args }}
