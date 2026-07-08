@@ -26,7 +26,7 @@ import type {
 } from '../lib/types'
 
 const STANDARD_FIELDS = new Set(['Title', 'UserName', 'Password', 'URL', 'Notes'])
-const CLIPBOARD_CLEAR_MS = 30_000
+const CLIPBOARD_CLEAR_MS = 45_000
 const RECENT_FILES_KEY = 'keepsake:recentFiles'
 const MAX_RECENT = 5
 
@@ -778,7 +778,7 @@ export const useVaultStore = defineStore('vault', () => {
       return
     }
     await writeText(text)
-    showToast(`${label} copied · clears in 30s`)
+    showToast(`${label} copied · clears in 45s`)
     if (clipboardTimer) clearTimeout(clipboardTimer)
     clipboardTimer = setTimeout(async () => {
       try {

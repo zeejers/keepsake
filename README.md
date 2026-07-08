@@ -43,7 +43,7 @@ Keepsake's job is to make that model *pleasant*: a clean three-pane layout, firs
 | **Biometric unlock** | Touch ID on macOS: the master password lives in your system keychain, gated by biometrics with a device-password fallback. |
 | **Multiple vaults** | Open several databases at once in tabs (`⌘1…⌘9` to switch), each with its own state. |
 | **The full KeePass model** | Groups, entries, custom fields, file attachments, edit history, and trash, all in a clean three-pane layout with multi-select and context menus. |
-| **Careful with secrets** | Clipboard auto-clears 30 seconds after copying, notes stay blurred until revealed, and a `.bak` is written beside local vaults on every save. |
+| **Careful with secrets** | Clipboard auto-clears 45 seconds after copying, notes stay blurred until revealed, and a `.bak` is written beside local vaults on every save. |
 | **Cross-platform** | One codebase: macOS, Windows, Linux, and Android (responsive single-pane layout on phones). |
 
 ## Downloads
@@ -137,7 +137,7 @@ The Rust side is a thin shell; all kdbx parsing happens in the webview via [kdbx
 - Crypto is delegated to [kdbxweb](https://github.com/keeweb/kdbxweb) (the library behind KeeWeb) with Argon2 via [hash-wasm](https://github.com/Daninet/hash-wasm); key derivation runs in a Web Worker.
 - Touch ID stores the master password in the macOS login Keychain (scoped to this app) behind a LocalAuthentication prompt.
 - Dropbox only ever receives the same encrypted bytes your disk would; encryption happens on-device, before upload.
-- Clipboard contents are cleared 30 seconds after copying a secret.
+- Clipboard contents are cleared 45 seconds after copying a secret.
 - This project has **not** been independently security-audited. Use at your own risk.
 
 ## License
