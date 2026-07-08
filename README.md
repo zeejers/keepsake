@@ -58,6 +58,7 @@ Grab the latest build for your platform from **[Releases](https://github.com/zee
 | Android | `.apk` (sideload) |
 
 > macOS builds are not yet notarized; right-click → **Open** on first launch.
+> Android: download `Keepsake-android.apk` on your phone and open it — allow installs from your browser when prompted. Releases are signed with the project's release key, so updates install over the top.
 
 ## Keyboard shortcuts
 
