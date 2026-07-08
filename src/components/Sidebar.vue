@@ -222,6 +222,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKeydown, tru
   text-align: left;
 }
 
+@media (pointer: coarse) {
+  .trash-row {
+    padding: 13px 12px;
+    font-size: 15px;
+  }
+}
+
 /* ---- context menu (matches EntryList's) ---- */
 .menu-backdrop {
   position: fixed;

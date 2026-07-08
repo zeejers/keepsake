@@ -1,7 +1,9 @@
 import { invoke } from '@tauri-apps/api/core'
+import { authenticate, checkStatus } from '@tauri-apps/plugin-biometric'
+import { isAndroid } from './platform'
 
-// Which vault paths have a keychain-stored password (UI marker only;
-// the secret itself lives in the macOS Keychain).
+// Which vault paths have an OS-protected stored password (UI marker only;
+// the secret itself lives in the macOS Keychain / Android Keystore).
 const MARKER_KEY = 'keepsake:biometricPaths'
 
 function markedPaths(): string[] {
@@ -26,6 +28,10 @@ function setMarker(path: string, on: boolean) {
 
 export async function biometricAvailable(): Promise<boolean> {
   try {
+    if (isAndroid) {
+      const status = await checkStatus()
+      return status.isAvailable
+    }
     return await invoke<boolean>('biometric_available')
   } catch {
     return false
@@ -37,8 +43,12 @@ export async function biometricStore(path: string, password: string): Promise<vo
   setMarker(path, true)
 }
 
-/** Prompts Touch ID (or the account password) and returns the master password. */
+/** Prompts biometrics (with device-credential fallback) and returns the master password. */
 export async function biometricUnlock(path: string, fileName: string): Promise<string> {
+  if (isAndroid) {
+    // the OS prompt happens here; the decrypt command runs only after it succeeds
+    await authenticate(`Unlock \u{201c}${fileName}\u{201d}`, { allowDeviceCredential: true })
+  }
   return await invoke<string>('biometric_unlock', { path, fileName })
 }
 

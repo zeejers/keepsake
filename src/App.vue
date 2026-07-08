@@ -45,6 +45,39 @@ watch(
   },
 )
 
+// Mirror pane depth into WebView history so Android's back gesture (which
+// Tauri routes to webView.goBack()) pops panes instead of closing the app;
+// only at the root pane does the gesture reach the OS and exit.
+const PANE_DEPTH = { groups: 0, entries: 1, detail: 2 } as const
+let historyDepth = 0
+let suppressPop = 0
+
+function onPopstate() {
+  if (suppressPop > 0) {
+    suppressPop--
+    return
+  }
+  historyDepth = Math.max(0, historyDepth - 1)
+  if (mobilePane.value === 'detail') store.selectEntry(null)
+  else if (mobilePane.value === 'entries') store.selectGroup(null)
+}
+
+watch(mobilePane, (pane) => {
+  if (!isNarrow.value) return
+  const target = PANE_DEPTH[pane]
+  while (historyDepth < target) {
+    history.pushState({ pane }, '')
+    historyDepth++
+  }
+  if (historyDepth > target) {
+    // in-app back (header buttons etc.): retire the stale history entries
+    const steps = historyDepth - target
+    historyDepth = target
+    suppressPop++
+    history.go(-steps)
+  }
+})
+
 // group create / rename prompt state
 const prompt = ref<{
   mode: 'create' | 'rename'
@@ -266,11 +299,13 @@ onMounted(() => {
   window.addEventListener('keydown', onKeydown)
   window.addEventListener('contextmenu', onContextMenu)
   window.addEventListener('resize', onResize)
+  window.addEventListener('popstate', onPopstate)
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown)
   window.removeEventListener('contextmenu', onContextMenu)
   window.removeEventListener('resize', onResize)
+  window.removeEventListener('popstate', onPopstate)
 })
 </script>
 

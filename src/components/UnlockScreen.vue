@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-vue-next'
 import { useVaultStore } from '../stores/vault'
+import { bioName } from '../lib/platform'
 import { parseSourceId, sourceId, sourceLabel, type VaultSource } from '../lib/kdbx'
 import {
   biometricAvailable,
@@ -284,9 +285,9 @@ async function submit() {
       try {
         await biometricStore(selectedId.value, password.value)
         bioRevision.value++
-        store.showToast('Touch ID unlock enabled')
+        store.showToast(`${bioName} unlock enabled`)
       } catch {
-        store.showToast('Could not enable Touch ID')
+        store.showToast(`Could not enable ${bioName}`)
       }
     }
     password.value = ''
@@ -479,11 +480,11 @@ defineExpose({ pickDatabase })
           <button class="btn primary bio-btn" :disabled="bioBusy" @click="unlockWithBiometrics">
             <LoaderCircle v-if="bioBusy" :size="15" class="spin" />
             <Fingerprint v-else :size="16" />
-            {{ bioBusy ? 'Waiting for Touch ID…' : 'Unlock with Touch ID' }}
+            {{ bioBusy ? `Waiting for ${bioName}…` : `Unlock with ${bioName}` }}
           </button>
           <div v-show="!bioBusy" class="bio-row">
             <span class="bio-or">or use your master password</span>
-            <button class="bio-disable" @click="disableBiometrics">Disable Touch ID</button>
+            <button class="bio-disable" @click="disableBiometrics">Disable {{ bioName }}</button>
           </div>
         </template>
 
@@ -525,7 +526,7 @@ defineExpose({ pickDatabase })
           <label v-if="bioAvailable && !bioEnabled" class="bio-optin">
             <input v-model="enableBio" type="checkbox" />
             <Fingerprint :size="13" />
-            Enable Touch ID unlock for this vault
+            Enable {{ bioName }} unlock for this vault
           </label>
 
           <button class="btn primary unlock-btn" type="submit" :disabled="!canSubmit">

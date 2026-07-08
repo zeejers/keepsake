@@ -165,4 +165,30 @@ function onContext(e: MouseEvent) {
   width: 22px;
   height: 22px;
 }
+
+/* touch devices: comfortable tap targets */
+@media (pointer: coarse) {
+  .row {
+    height: 48px;
+    gap: 9px;
+    margin: 2px 8px;
+  }
+  .name {
+    font-size: 15.5px;
+  }
+  .count {
+    font-size: 13px;
+  }
+  .chevron,
+  .chevron-spacer {
+    width: 30px;
+  }
+  .chevron {
+    height: 30px;
+  }
+  .folder {
+    width: 19px;
+    height: 19px;
+  }
+}
 </style>
