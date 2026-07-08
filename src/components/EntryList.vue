@@ -322,10 +322,18 @@ watch(
   padding: 9px;
 }
 @media (pointer: coarse) {
+  .footer {
+    padding: 12px 14px 14px;
+  }
   .footer-btn {
-    padding: 14px;
-    font-size: 15px;
+    padding: 17px;
+    font-size: 16px;
+    font-weight: 600;
     border-radius: var(--radius);
+  }
+  .footer-btn svg {
+    width: 18px;
+    height: 18px;
   }
 }
 .kbd-group {
