@@ -91,6 +91,14 @@
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 8px;
     }
+    .pane-note {
+      padding: 12px 14px; border-radius: 10px;
+      background: var(--panel); border: 1px solid var(--border-soft);
+      color: var(--muted); font-size: 12.5px; line-height: 1.6;
+    }
+    .pane-note b { color: var(--text-soft); font-weight: 600; }
+    .pane-note ol { margin: 6px 0 6px 18px; padding: 0; }
+    .pane-note li { margin: 2px 0; }
     .pane-all {
       margin-top: auto; align-self: flex-start;
       color: var(--muted); font-size: 12px; text-decoration: none;
@@ -199,13 +207,21 @@
               <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
               <div class="pane-title">
                 <h3>Keepsake for macOS</h3>
-                <p>For Apple Silicon and Intel Macs. Not yet notarized: on first launch, click Done on the warning, then System Settings → Privacy &amp; Security → Open Anyway. One-time only.</p>
+                <p>For Apple Silicon and Intel Macs.</p>
               </div>
               <span class="ver" data-ver></span>
             </div>
             <div class="pane-links">
               <a class="asset" href="https://github.com/zeejers/keepsake/releases/latest/download/Keepsake-macos-arm64.dmg">Apple Silicon (.dmg)</a>
               <a class="asset" href="https://github.com/zeejers/keepsake/releases/latest/download/Keepsake-macos-intel.dmg">Intel (.dmg)</a>
+            </div>
+            <div class="pane-note">
+              <b>First launch</b> — Keepsake isn't notarized yet, so macOS will block it once:
+              <ol>
+                <li>Open the app; when the warning appears, click <b>Done</b> (not Move&nbsp;to&nbsp;Trash).</li>
+                <li>Go to <b>System&nbsp;Settings → Privacy&nbsp;&amp;&nbsp;Security</b>, scroll to Security, click <b>Open&nbsp;Anyway</b>.</li>
+              </ol>
+              That's it — every launch after that is normal. On macOS&nbsp;15.0 and earlier, right-click&nbsp;→&nbsp;Open also works.
             </div>
             <a class="pane-all" href="https://github.com/zeejers/keepsake/releases">All versions and release notes</a>
           </div>
