@@ -57,6 +57,13 @@ function onPopstate() {
     suppressPop--
     return
   }
+  if (store.searchOpen) {
+    // back gesture with the palette open closes it, not the pane under it;
+    // re-push the consumed entry so pane depth accounting stays intact
+    store.searchOpen = false
+    history.pushState({ pane: mobilePane.value }, '')
+    return
+  }
   historyDepth = Math.max(0, historyDepth - 1)
   if (mobilePane.value === 'detail') store.selectEntry(null)
   else if (mobilePane.value === 'entries') store.selectGroup(null)
@@ -350,7 +357,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="topbar-actions">
-        <button class="search-pill" @click="store.searchOpen = true">
+        <button v-if="!isNarrow" class="search-pill" @click="store.searchOpen = true">
           <Search :size="13" />
           <span>Search</span>
           <span class="pill-keys"><kbd>{{ modKey }}</kbd><kbd>K</kbd></span>
@@ -369,6 +376,11 @@ onBeforeUnmount(() => {
         </button>
       </div>
     </header>
+
+    <button v-if="isNarrow" class="mobile-search" @click="store.searchOpen = true">
+      <Search :size="18" />
+      <span>Search entries and groups…</span>
+    </button>
 
     <main class="panes" :class="isNarrow ? ['narrow', 'show-' + mobilePane] : []">
       <Sidebar @new-group="openNewGroupPrompt" @rename-group="openRenamePrompt" />
@@ -512,6 +524,29 @@ onBeforeUnmount(() => {
 .pill-keys {
   display: inline-flex;
   gap: 3px;
+}
+
+/* phone layout: big always-visible search bar under the topbar */
+.mobile-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 12px;
+  padding: 13px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 15px;
+  font-family: var(--sans);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.mobile-search:active {
+  background: var(--panel-3);
+}
+.mobile-search svg {
+  flex-shrink: 0;
 }
 
 .panes {

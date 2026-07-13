@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import { Folder, Search } from 'lucide-vue-next'
+import { Folder, Search, X } from 'lucide-vue-next'
 import EntryAvatar from './EntryAvatar.vue'
 import { fuzzyScore } from '../lib/fuzzy'
 import { useVaultStore } from '../stores/vault'
@@ -94,6 +94,9 @@ function onKeydown(e: KeyboardEvent) {
               spellcheck="false"
             />
             <kbd>esc</kbd>
+            <button class="close-btn" @click="store.searchOpen = false">
+              <X :size="18" />
+            </button>
           </div>
 
           <div class="results" v-if="results.length">
@@ -160,6 +163,26 @@ function onKeydown(e: KeyboardEvent) {
 }
 .search-input::placeholder {
   color: var(--faint);
+}
+
+/* touch-only dismiss affordance; desktop uses esc */
+.close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--panel-3);
+  color: var(--muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+@media (hover: none) {
+  .close-btn {
+    display: inline-flex;
+  }
 }
 
 .results {
@@ -241,5 +264,34 @@ function onKeydown(e: KeyboardEvent) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+/* phone: sit near the top so the on-screen keyboard doesn't cover results */
+@media (max-width: 700px) {
+  .overlay {
+    padding-top: 10px;
+  }
+  .palette {
+    max-width: calc(100vw - 20px);
+  }
+  .results {
+    max-height: 45vh;
+  }
+  .search-input {
+    font-size: 16px;
+  }
+}
+
+@media (pointer: coarse) {
+  .result {
+    padding: 12px 10px;
+  }
+}
+
+/* the footer only explains keyboard navigation — noise on touch */
+@media (hover: none) {
+  .palette-foot {
+    display: none;
+  }
 }
 </style>
