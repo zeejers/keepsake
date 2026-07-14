@@ -56,6 +56,12 @@ watch(
   },
 )
 
+// not v-model: its IME guard drops input events until compositionend, which on
+// Android keyboards only fires at a word break or when the keyboard is dismissed
+function onInput(e: Event) {
+  query.value = (e.target as HTMLInputElement).value
+}
+
 function choose(item: SearchItem) {
   if (item.kind === 'entry') store.revealEntry(item.id)
   else store.selectGroup(item.id)
@@ -88,10 +94,15 @@ function onKeydown(e: KeyboardEvent) {
             <Search :size="17" class="search-icon" />
             <input
               ref="inputEl"
-              v-model="query"
+              :value="query"
+              @input="onInput"
               class="search-input"
               placeholder="Search entries and groups…"
               spellcheck="false"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="none"
+              enterkeyhint="go"
             />
             <kbd>esc</kbd>
             <button class="close-btn" @click="store.searchOpen = false">
