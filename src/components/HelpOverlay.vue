@@ -12,6 +12,7 @@ const sections = [
       { keys: ['↑', '↓'], label: 'Move between entries' },
       { keys: [mod, '1-9'], label: 'Switch vault tab' },
       { keys: [mod, 'O'], label: 'Open another vault' },
+      { keys: [mod, 'K'], label: 'Unlock default vault (lock screen)' },
       { keys: ['esc'], label: 'Close / deselect' },
     ],
   },

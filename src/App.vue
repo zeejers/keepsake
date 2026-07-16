@@ -167,7 +167,14 @@ function onKeydown(e: KeyboardEvent) {
     return
   }
 
-  if (store.locked) return
+  if (store.locked) {
+    // ⌘K jumps to the default (most recent) vault and starts unlocking it
+    if (mod && e.key.toLowerCase() === 'k') {
+      e.preventDefault()
+      void unlockScreen.value?.openDefault()
+    }
+    return
+  }
 
   if (mod && (e.key.toLowerCase() === 'k' || (e.key.toLowerCase() === 'f' && !e.shiftKey))) {
     e.preventDefault()

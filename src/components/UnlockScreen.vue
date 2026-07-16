@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { open, save } from '@tauri-apps/plugin-dialog'
 import { openUrl } from '@tauri-apps/plugin-opener'
 import {
@@ -15,7 +15,7 @@ import {
   X,
 } from 'lucide-vue-next'
 import { useVaultStore } from '../stores/vault'
-import { bioName } from '../lib/platform'
+import { bioName, modKey } from '../lib/platform'
 import { parseSourceId, sourceId, sourceLabel, type VaultSource } from '../lib/kdbx'
 import {
   biometricAvailable,
@@ -303,6 +303,23 @@ async function submit() {
   }
 }
 
+// Jump to the default (most recent) vault: select it, then unlock with
+// biometrics when enabled, otherwise put the cursor in the password field.
+async function openDefault() {
+  if (busy.value || bioBusy.value) return
+  const recent = store.recentFiles()[0]
+  if (!recent) {
+    void pickDatabase()
+    return
+  }
+  mode.value = 'open'
+  selected.value = parseSourceId(recent)
+  error.value = ''
+  await nextTick()
+  if (bioAvailable.value && bioEnabled.value) void unlockWithBiometrics()
+  else passwordInput.value?.focus()
+}
+
 function fmtWhen(iso: string): string {
   const d = new Date(iso)
   return isNaN(d.getTime())
@@ -310,7 +327,7 @@ function fmtWhen(iso: string): string {
     : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-defineExpose({ pickDatabase })
+defineExpose({ pickDatabase, openDefault })
 </script>
 
 <template>
@@ -483,6 +500,7 @@ defineExpose({ pickDatabase })
             <LoaderCircle v-if="bioBusy" :size="15" class="spin" />
             <Fingerprint v-else :size="16" />
             {{ bioBusy ? `Waiting for ${bioName}…` : `Unlock with ${bioName}` }}
+            <kbd v-if="!bioBusy && !props.modal" class="bio-kbd">{{ modKey }}K</kbd>
           </button>
           <div v-show="!bioBusy" class="bio-row">
             <span class="bio-or">or use your master password</span>
@@ -815,6 +833,12 @@ h1 {
   padding: 10px;
   font-size: 14px;
   flex-shrink: 0;
+}
+.bio-kbd {
+  margin-left: 2px;
+  border-color: rgba(6, 35, 26, 0.25);
+  background: rgba(6, 35, 26, 0.12);
+  color: inherit;
 }
 .bio-row {
   width: 100%;
